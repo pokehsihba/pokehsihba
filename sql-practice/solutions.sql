@@ -44,3 +44,13 @@ FROM ranked AS r
 JOIN customers AS c ON c.customer_id = r.customer_id
 WHERE r.spend_rank <= 2
 ORDER BY r.spend_rank, r.customer_id;
+
+-- 6. Running revenue after each completed order.
+SELECT order_id, order_date, amount,
+       SUM(amount) OVER (
+           ORDER BY order_date, order_id
+           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+       ) AS running_revenue
+FROM orders
+WHERE status = 'completed'
+ORDER BY order_date, order_id;
