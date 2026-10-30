@@ -28,3 +28,19 @@ WHERE o.status = 'completed'
 GROUP BY c.customer_id, c.customer_name
 HAVING COUNT(*) >= 2
 ORDER BY c.customer_id;
+
+-- 5. Top two distinct spending ranks, including ties.
+WITH spending AS (
+    SELECT customer_id, SUM(amount) AS spend
+    FROM orders
+    WHERE status = 'completed'
+    GROUP BY customer_id
+), ranked AS (
+    SELECT customer_id, spend, DENSE_RANK() OVER (ORDER BY spend DESC) AS spend_rank
+    FROM spending
+)
+SELECT c.customer_name, r.spend, r.spend_rank
+FROM ranked AS r
+JOIN customers AS c ON c.customer_id = r.customer_id
+WHERE r.spend_rank <= 2
+ORDER BY r.spend_rank, r.customer_id;
