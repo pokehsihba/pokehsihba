@@ -54,3 +54,18 @@ SELECT order_id, order_date, amount,
 FROM orders
 WHERE status = 'completed'
 ORDER BY order_date, order_id;
+
+-- 7. Latest completed order for each customer who made one.
+WITH ranked AS (
+    SELECT customer_id, order_id, order_date, amount,
+           ROW_NUMBER() OVER (
+               PARTITION BY customer_id ORDER BY order_date DESC, order_id DESC
+           ) AS row_num
+    FROM orders
+    WHERE status = 'completed'
+)
+SELECT c.customer_name, r.order_id, r.order_date, r.amount
+FROM ranked AS r
+JOIN customers AS c ON c.customer_id = r.customer_id
+WHERE r.row_num = 1
+ORDER BY r.customer_id;
