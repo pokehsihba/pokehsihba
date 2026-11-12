@@ -24,3 +24,7 @@ I'm interested in Data Engineering, Data Analytics, and Data Science opportuniti
 ### Let's connect
 
 [LinkedIn](https://linkedin.com/in/abhishekyadav) · [Email](mailto:abhishekyadav7778@gmail.com)
+
+## SQL portfolio
+
+[SQL Practice - E-commerce Orders](./sql-practice/) has eight exercises with sample data and reference solutions.
