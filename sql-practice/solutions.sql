@@ -69,3 +69,19 @@ FROM ranked AS r
 JOIN customers AS c ON c.customer_id = r.customer_id
 WHERE r.row_num = 1
 ORDER BY r.customer_id;
+
+-- 8. Month-over-month revenue change for months with completed sales.
+WITH monthly AS (
+    SELECT SUBSTR(CAST(order_date AS TEXT), 1, 7) AS order_month,
+           SUM(amount) AS revenue
+    FROM orders
+    WHERE status = 'completed'
+    GROUP BY SUBSTR(CAST(order_date AS TEXT), 1, 7)
+), comparison AS (
+    SELECT order_month, revenue, LAG(revenue) OVER (ORDER BY order_month) AS prior_revenue
+    FROM monthly
+)
+SELECT order_month, revenue, prior_revenue,
+       ROUND(100.0 * (revenue - prior_revenue) / NULLIF(prior_revenue, 0), 2) AS change_pct
+FROM comparison
+ORDER BY order_month;
